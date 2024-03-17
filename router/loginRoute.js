@@ -1,12 +1,13 @@
 const Express = require("express");
 const Router = Express.Router();
+const Bcrypt = require("bcrypt");
 const admin = require("../model/adminSchema");
 
 Router.post("/LoginAdmin", async (req, res) => {
     try {
-        const { sem, userId, password } = req.body;
+        const { userId, password } = req.body;
 
-        if (!userId || !password || !sem) {
+        if (!userId || !password) {
             return res.status(400).json({ status: 400 }); //missing field
         }
 
@@ -39,6 +40,22 @@ Router.post("/LoginAdmin", async (req, res) => {
             }
         }
     } catch (err) {
+        console.log(err);
+        return res.status(500).json({ status: 500 }); //Internal server error
+    }
+});
+
+Router.post("/superAdminLogin", async (req, res) => {
+    try {
+        const { userId, password } = req.body;
+        if (!userId || !password) {
+            return res.status(400).json({ status: 400 }); //missing field
+        }
+        if (userId == process.env.userId && password == process.env.password) {
+            return res.status(200).json({ status: 200 });
+        }
+        return res.status(401).json({ status: 401 }); //Incorrect Email or Password
+    } catch (error) {
         console.log(err);
         return res.status(500).json({ status: 500 }); //Internal server error
     }

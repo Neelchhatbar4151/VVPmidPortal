@@ -2,10 +2,11 @@ const Mongoose = require("mongoose");
 const Bcrypt = require("bcrypt");
 const Jwt = require("jsonwebtoken");
 
-const adminSchema = new Mongoose.schema({
+const adminSchema = new Mongoose.Schema({
     adminUserId: {
         type: String,
         required: true,
+        unique: true,
     },
 
     adminPassword: {
@@ -15,6 +16,11 @@ const adminSchema = new Mongoose.schema({
 
     adminSubject: {
         type: String,
+        required: true,
+    },
+
+    adminSubjectCode: {
+        type: Number,
         required: true,
     },
 
@@ -50,7 +56,7 @@ adminSchema.methods.GenerateAuthToken = async function () {
 
 adminSchema.pre("save", async function (next) {
     if (this.isModified("adminPassword")) {
-        this.nPassword = await Bcrypt.hash(this.adminPassword, 12);
+        this.adminPassword = await Bcrypt.hash(this.adminPassword, 12);
     }
     next();
 });
