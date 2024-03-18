@@ -3,6 +3,7 @@ const Router = Express.Router();
 const admin = require("../model/adminSchema.js");
 const semester = require("../model/studentSchema.js");
 const subjects = require("../assets/semesterSubjects.js");
+const Jwt = require("jsonwebtoken");
 
 Router.post("/studentEntry", async (req, res) => {
     try {
@@ -66,6 +67,45 @@ Router.post("/removeStudent", async (req, res) => {
     } catch (error) {
         console.log(error);
         return res.status(500).json({ status: 500 }); //Internal Server Error
+    }
+});
+
+Router.post("/updateStudent", async (req, res) => {
+    try {
+        const { students, sem, token, subjectCode } = req.body;
+        if (!sem || sem < 1 || sem > 7 || !token || !subjectCode) {
+            return res.status(400).json({ status: 400 }); //invalid field
+        }
+
+        const verifyToken = Jwt.verify(token, process.env.SECRET_KEY);
+
+        const rootUser = await admin.findOne({
+            _id: verifyToken._id,
+            "adminTokens.adminToken": token,
+        });
+
+        if (!rootUser) {
+            return res.status(403).json({ status: 403 }); //Not authorized
+        }
+
+        for (let i = 0; i < students.length; i++) {
+            const data = await semester[sem - 1].updateOne(
+                {
+                    _id: students[i]._id,
+                    "studentMarks.subjectCode": subjectCode,
+                },
+                {
+                    $set: {
+                        "studentMarks.$.mid1": students[i].mid1,
+                        "studentMarks.$.mid2": students[i].mid2,
+                    },
+                }
+            );
+        }
+        return res.status(200).json({ status: 200 });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: 500 });
     }
 });
 

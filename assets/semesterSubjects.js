@@ -1,8 +1,76 @@
 let temp = 0;
 module.exports = [
     [],
-    [],
-    [],
+    [
+        {
+            subjectCode: 3110014,
+            subjectName: "Mathematics - 1",
+            mid1: temp,
+            mid2: temp,
+        },
+        {
+            subjectCode: 3110012,
+            subjectName: "Workshop",
+            mid1: temp,
+            mid2: temp,
+        },
+        {
+            subjectCode: 3110003,
+            subjectName: "Programming for Problem Solving",
+            mid1: temp,
+            mid2: temp,
+        },
+        {
+            subjectCode: 3110016,
+            subjectName: "Basic Electronics",
+            mid1: temp,
+            mid2: temp,
+        },
+        {
+            subjectCode: 3110013,
+            subjectName: "Engineering Graphics & Design",
+            mid1: temp,
+            mid2: temp,
+        },
+    ],
+    [
+        {
+            subjectCode: 3110002,
+            subjectName: "English",
+            mid1: temp,
+            mid2: temp,
+        },
+        {
+            subjectCode: 3110006,
+            subjectName: "Basic Mechanical Engineering",
+            mid1: temp,
+            mid2: temp,
+        },
+        {
+            subjectCode: 3110005,
+            subjectName: "Basic Electrical Engineering",
+            mid1: temp,
+            mid2: temp,
+        },
+        {
+            subjectCode: 3110007,
+            subjectName: "Environmental Science",
+            mid1: temp,
+            mid2: temp,
+        },
+        {
+            subjectCode: 3110011,
+            subjectName: "Physics",
+            mid1: temp,
+            mid2: temp,
+        },
+        {
+            subjectCode: 3110015,
+            subjectName: "Mathematics - 2",
+            mid1: temp,
+            mid2: temp,
+        },
+    ],
     [
         {
             subjectCode: 3130004,

@@ -39,13 +39,6 @@ const semesterSchema = new Mongoose.Schema({
     ],
 });
 
-// module.exports.sem1 = Mongoose.model("sem1", semesterSchema);
-// module.exports.sem2 = Mongoose.model("sem2", semesterSchema);
-// module.exports.sem3 = Mongoose.model("sem3", semesterSchema);
-// module.exports.sem4 = Mongoose.model("sem4", semesterSchema);
-// module.exports.sem5 = Mongoose.model("sem5", semesterSchema);
-// module.exports.sem6 = Mongoose.model("sem6", semesterSchema);
-// module.exports.sem7 = Mongoose.model("sem7", semesterSchema);
 module.exports = [
     Mongoose.model("sem1", semesterSchema),
     Mongoose.model("sem2", semesterSchema),
