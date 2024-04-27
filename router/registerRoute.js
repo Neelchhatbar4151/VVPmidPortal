@@ -3,7 +3,7 @@ const Router = Express.Router();
 const admin = require("../model/adminSchema");
 const subjects = require("../assets/semesterSubjects");
 
-Router.post("/RegisterAdmin", async (req, res) => {
+Router.post("/registerAdmin", async (req, res) => {
     try {
         const { sem, userId, password, subject, key } = req.body;
 
@@ -18,7 +18,7 @@ Router.post("/RegisterAdmin", async (req, res) => {
         ) {
             return res.status(400).json({ status: 400 }); //missing field
         }
-        if (key != process.env.SECRET_KEY) {
+        if (key != process.env.TRANSACTION_KEY) {
             return res.status(403).json({ status: 403 }); //not Authorized
         }
         const Exist = await admin.findOne(
@@ -46,7 +46,7 @@ Router.post("/RegisterAdmin", async (req, res) => {
         const user = new admin({
             adminUserId: userId,
             adminPassword: password,
-            adminStatus: req.body.status ? req.body.status : false,
+            adminStatus: true,
             adminSemester: sem,
             adminSubject: subjects[sem][flag].subjectName,
             adminSubjectCode: subject,

@@ -29,11 +29,11 @@ const semesterSchema = new Mongoose.Schema({
             },
             mid1: {
                 type: Number,
-                default: 0,
+                default: null,
             },
             mid2: {
                 type: Number,
-                default: 0,
+                default: null,
             },
         },
     ],

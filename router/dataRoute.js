@@ -11,35 +11,34 @@ Router.post("/studentEntry", async (req, res) => {
         if (!sem || sem < 1 || sem > 7 || !key) {
             return res.status(400).json({ status: 400 }); //invalid field
         }
-        if (key != process.env.SECRET_KEY) {
+        if (key != process.env.TRANSACTION_KEY) {
             return res.status(403).json({ status: 403 }); //not Authorized
         }
         for (let i = 0; i < students.length; i++) {
             if (
-                !students[i].studentEnrollment ||
-                !students[i].studentName ||
-                !students[i].studentPassword
+                !students[i].enrollment ||
+                !students[i].name ||
+                !students[i].password
             ) {
                 return res.status(400).json({ status: 400 }); //missing field
             }
 
             const Exist = await semester[sem - 1].findOne(
-                { studentEnrollment: students[i].studentEnrollment },
+                { studentEnrollment: students[i].enrollment },
                 {
                     _id: 1,
                 }
             );
 
-            if (Exist) {
-                return res.status(422).json({ status: 422 }); //Already Exist
+            if (!Exist) {
+                const user = new semester[sem - 1]({
+                    studentEnrollment: students[i].enrollment,
+                    studentName: students[i].name,
+                    studentPassword: students[i].password,
+                    studentMarks: subjects[sem],
+                });
+                await user.save();
             }
-            const user = new semester[sem - 1]({
-                studentEnrollment: students[i].studentEnrollment,
-                studentName: students[i].studentName,
-                studentPassword: students[i].studentPassword,
-                studentMarks: subjects[sem],
-            });
-            await user.save();
         }
         res.status(201).send({ status: 201 }); //User created
     } catch (error) {
@@ -48,13 +47,29 @@ Router.post("/studentEntry", async (req, res) => {
     }
 });
 
+Router.post("/removeAllStudents", async (req, res) => {
+    try {
+        const { sem, key } = req.body;
+        if (!sem || sem < 1 || sem > 7 || !key) {
+            return res.status(400).json({ status: 400 }); //invalid field
+        }
+        if (key != process.env.TRANSACTION_KEY) {
+            return res.status(403).json({ status: 403 }); //not Authorized
+        }
+        await semester[sem - 1].deleteMany({});
+        res.status(201).send({ status: 201 }); //ok
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: 500 }); //Internal Server Error
+    }
+});
 Router.post("/removeStudent", async (req, res) => {
     try {
         const { students, sem, key } = req.body;
         if (!sem || sem < 1 || sem > 7 || !key) {
             return res.status(400).json({ status: 400 }); //invalid field
         }
-        if (key != process.env.SECRET_KEY) {
+        if (key != process.env.TRANSACTION_KEY) {
             return res.status(403).json({ status: 403 }); //not Authorized
         }
         for (let i = 0; i < students.length; i++) {
@@ -109,4 +124,74 @@ Router.post("/updateStudent", async (req, res) => {
     }
 });
 
+Router.post("/getData", async (req, res) => {
+    try {
+        const { token } = req.body;
+        if (!token) {
+            return res.status(400).json({ status: 400 });
+        }
+        const verifyToken = Jwt.verify(token, process.env.SECRET_KEY);
+        const rootUser = await admin.findOne({
+            _id: verifyToken._id,
+            "adminTokens.adminToken": token,
+        });
+        if (!rootUser) {
+            return res.status(402).json({ status: 402 });
+        }
+        req.token = token;
+        req.rootUser = rootUser;
+        return res.status(200).json({ status: 200, data: req.rootUser });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: 500 });
+    }
+});
+
+Router.post("/listStudents", async (req, res) => {
+    try {
+        const { token, key, sem } = req.body;
+        if (!token && !key) {
+            return res.status(400).json({ status: 400 });
+        }
+        if (key) {
+            if (!sem) {
+                return res.status(400).json({ status: 400 });
+            }
+
+            if (key != process.env.TRANSACTION_KEY) {
+                return res.status(403).json({ status: 403 }); //not Authorized
+            }
+            const students = await semester[sem - 1].find({});
+            return res.status(200).json({ status: 200, data: students });
+        } else {
+            const verifyToken = Jwt.verify(token, process.env.SECRET_KEY);
+            const rootUser = await admin.findOne({
+                _id: verifyToken._id,
+                "adminTokens.adminToken": token,
+            });
+            if (!rootUser) {
+                return res.status(402).json({ status: 402 });
+            }
+            const sem = rootUser.adminSemester;
+            const students = await semester[sem - 1].find({});
+            return res.status(200).json({ status: 200, data: students });
+        }
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: 500 });
+    }
+});
+
+Router.post("/listAdmins", async (req, res) => {
+    try {
+        const admins = await admin.find(
+            {},
+            { adminSubjectCode: 1, adminUserId: 1, adminSemester: 1 }
+        );
+        return res.status(200).json({ status: 200, data: admins });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: 500 });
+    }
+});
 module.exports = Router;
