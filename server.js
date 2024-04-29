@@ -34,7 +34,8 @@ mongoose
         App.use(Express.static("client/build"));
         App.get("*", (req, res) => {
             res.sendFile(
-                path.resolve(__dirname, "client", "build", "index.html")
+                path.resolve(__dirname, "build", "index.html")
+                // "../client/build/index.html"
             );
         });
     })

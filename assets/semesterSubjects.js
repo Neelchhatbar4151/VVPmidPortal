@@ -1,4 +1,4 @@
-let temp = 0;
+let temp = null;
 module.exports = [
     [],
     [
