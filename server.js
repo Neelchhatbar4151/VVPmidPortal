@@ -31,7 +31,7 @@ mongoose
     .then(() => {
         console.log("connection successfull");
         App.listen(PORT);
-        App.use(Express.static("client/build"));
+        App.use(Express.static("build/"));
         App.get("*", (req, res) => {
             res.sendFile(
                 path.resolve(__dirname, "build", "index.html")
