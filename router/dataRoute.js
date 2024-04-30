@@ -194,4 +194,41 @@ Router.post("/listAdmins", async (req, res) => {
         return res.status(500).json({ status: 500 });
     }
 });
+
+const max = (a, b) => {
+    if (a < b) {
+        return b;
+    }
+    return a;
+};
+
+Router.post("/getHighest", async (req, res) => {
+    try {
+        const { sem } = req.body;
+        const students = await semester[sem - 1].find({});
+        let list = [];
+        for (let i = 0; i < students[0].studentMarks.length; i++) {
+            list.push({
+                subjectCode: students[0].studentMarks[i].subjectCode,
+                subject: students[0].studentMarks[i].subjectName,
+                mid1: 0,
+                mid2: 0,
+            });
+            for (let j = 0; j < students.length; j++) {
+                list[i].mid1 = max(
+                    list[i].mid1,
+                    students[j].studentMarks[i].mid1
+                );
+                list[i].mid2 = max(
+                    list[i].mid2,
+                    students[j].studentMarks[i].mid2
+                );
+            }
+        }
+        return res.status(200).json({ status: 200, data: list });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: 500 });
+    }
+});
 module.exports = Router;
